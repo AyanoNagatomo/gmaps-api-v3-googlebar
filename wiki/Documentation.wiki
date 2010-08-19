@@ -1,0 +1,14 @@
+#summary Some tips and tricks for using the jGoogleBarv3.js
+#labels Phase-Implementation
+
+= Introduction =
+
+So, when the GMaps API team announced the deprecation of the v2 JS API, it sparked a mass exodus toward v3. One relatively popular feature, the GoogleBar (aka Local Search Control), is fundamentally incompatible with v3 of the GMaps API. Since local search and GMaps are a natural mashup, the jGoogleBar was created. This control borrows its essential functionality, HTML structure, and CSS from the original Local Search Control but adds a couple of tweaks and tricks to the mix. 
+
+
+= Details =
+
+==Heading2==
+Getting Started
+
+This is a test.
