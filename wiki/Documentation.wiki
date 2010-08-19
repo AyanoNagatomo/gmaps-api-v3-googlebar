@@ -40,7 +40,8 @@ To demonstrate, consider this simple example:
      // we're going with the defaults
     };
     var map=new google.maps.Map(document.getElementById('map_canvas'),mapOptions);
-    map.controls[google.maps.ControlPosition.BOTTOM_LEFT].push((new window.jeremy.jGoogleBar(map,mapOptions)).container);
+    var gbar=new window.jeremy.jGoogleBar(map,gbarOptions)
+    map.controls[google.maps.ControlPosition.BOTTOM_LEFT].push(gbar.container);
    }
    google.setOnLoadCallback(init);
   </script>
@@ -51,3 +52,6 @@ To demonstrate, consider this simple example:
  </body>
 </html>
 }}}
+
+=Advanced Stuff=
+I really should put something in here.
