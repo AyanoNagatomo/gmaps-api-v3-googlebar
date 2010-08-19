@@ -281,7 +281,6 @@
   z.cursor=response.cursor;
   z.resultViewport=response.viewport;
   z.attribution=response.attribution;
-  z.create
   for(var i=0;i<results.length;i++){
    z.createResultHtml(results[i]);
   }
