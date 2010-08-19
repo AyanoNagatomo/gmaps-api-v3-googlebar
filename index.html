@@ -21,7 +21,7 @@
      // we're going with the defaults
     };
     var map=new google.maps.Map(document.getElementById('map_canvas'),mapOptions);
-    map.controls[google.maps.ControlPosition.BOTTOM_LEFT].push((new window.jeremy.jGoogleBar(map,mapOptions)).container);
+    map.controls[google.maps.ControlPosition.BOTTOM_LEFT].push((new window.jeremy.jGoogleBar(map,gbarOptions)).container);
    }
    google.setOnLoadCallback(init);
   </script>
