@@ -1,14 +1,53 @@
 #summary Some tips and tricks for using the jGoogleBarv3.js
 #labels Phase-Implementation
 
-= Introduction =
+=Introduction=
 
 So, when the GMaps API team announced the deprecation of the v2 JS API, it sparked a mass exodus toward v3. One relatively popular feature, the GoogleBar (aka Local Search Control), is fundamentally incompatible with v3 of the GMaps API. Since local search and GMaps are a natural mashup, the jGoogleBar was created. This control borrows its essential functionality, HTML structure, and CSS from the original Local Search Control but adds a couple of tweaks and tricks to the mix. 
 
 
-= Details =
+= Getting Started =
 
-==Heading2==
-Getting Started
+Basic usage of the jGoogleBar is relatively straight forward. The basic steps are:
 
-This is a test.
+  # Create a page which loads a Google Map
+  # Create the control
+  # Push the control's .container into the appropriate control position.
+
+To demonstrate, consider this simple example:
+
+{{{
+<html>
+ <head>
+  <title>jGoogleBarV3</title>
+  <style type="text/css">
+   #map_canvas{
+    height:100%;
+    width:100%;
+   }
+  </style>
+  <script type="text/javascript" src="http://www.google.com/jsapi"></script>
+  <script type="text/javascript">
+   google.load('maps','3',{other_params:'sensor=false'}); // load the maps api
+   google.load('search','1'); // load the search api (need this for the search form)
+   function init(){
+    var mapOptions={ // set up some map options
+     center : new google.maps.LatLng(44, -93),
+     mapTypeId : google.maps.MapTypeId.ROADMAP,
+     zoom : 9
+    },
+    gbarOptions={
+     // we're going with the defaults
+    };
+    var map=new google.maps.Map(document.getElementById('map_canvas'),mapOptions);
+    map.controls[google.maps.ControlPosition.BOTTOM_LEFT].push((new window.jeremy.jGoogleBar(map,mapOptions)).container);
+   }
+   google.setOnLoadCallback(init);
+  </script>
+  <script type="text/javascript" src="jGoogleBarV3.js"></script>
+ </head>
+ <body>
+  <div id="map_canvas"></div>
+ </body>
+</html>
+}}}
