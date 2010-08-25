@@ -13,11 +13,14 @@
 
 
 (function(){
- var m=google.maps, // fewer keystrokes is good
-  s=google.search,
+ var   gsearch_css='default.css', // You need to edit this so it it points to your version of the default.css
+  m=google.maps, // fewer keystrokes is good
+  gmlocalsearch_css='http://www.google.com/uds/solutions/localsearch/gmlocalsearch.css',
   defaultOptions={ // default options for the control; should be pretty self-explanatory
    'resultSetSize' : 8,
-   'clearResultsString' : 'Clear results',
+   'clearResultsString' : 'X',
+   'minimizeResultsString' : '_',
+   'maximizeResultsString' : '^',
    'icons' : [],
    'shadow' : new m['MarkerImage']('http://www.google.com/mapfiles/gadget/shadow50Small80.png',null,null,new m.Point(8,28)),
    'showResultsList' : true,
@@ -29,12 +32,19 @@
  }
 
  if(!window['noGBarCSS']){ // load the CSS if we want it
-  var style=createEl('link',null,null,{ // let's add the stylesheet we're going to need
-           'href' : 'http://www.google.com/uds/solutions/localsearch/gmlocalsearch.css',
+  var style=createEl('link',null,null,{ // let's add the gmlocalsearch.css stylesheet we're going to need
+           'href' : gmlocalsearch_css,
            'rel' : 'stylesheet',
            'type' : 'text/css'
-          });
-  document.getElementsByTagName('head')[0].appendChild(style);
+          }),
+   otherStyle=createEl('link',null,null,{ // let's add the default.css we're going to need
+                        'href' : gsearch_css,
+                        'rel' : 'stylesheet',
+                        'type' : 'text/css'
+                       }),
+   headEl=document.getElementsByTagName('head')[0];
+  headEl.appendChild(style);
+  headEl.appendChild(otherStyle);
  }
  // Google Bar itself
  function jGoogleBar(map,options){ // constructor
@@ -57,7 +67,7 @@
   var z=this,
    container=z['container']=createDiv('gmls',[
                                    z['innerContainer']=createDiv('gmls-app gmls-idle gmls-app-full-mode gmls-std-mode',[
-                                             z['resultsDiv']=createDiv('gmls-results-popup',[
+                                             z['resultsDiv']=createDiv('gmls-results-popup gmls-results-popup-maximized',[
                                                                     createDiv('gmls-results-list',[
                                                                               createDiv('gmls-results-table',[
                                                                                         z['resultsTable']=createEl('table','gmls-results-table')
@@ -67,9 +77,19 @@
                                                                                                  createEl('tr',null,[
                                                                                                           createEl('td','gmls-more-results gsc-results',[createDiv('gsc-cursor-box',[z['pageDiv']=createDiv('gsc-cursor')])]),
                                                                                                           createEl('td','gmls-prev-next'),
-                                                                                                          createEl('td','gmls-clear-results',[createDiv('gmls-clear-results',[z.options['clearResultsString']],{
+                                                                                                          createEl('td','gmls-clear-results',[createDiv('gmls-minimize-results gmls-control-button',[z.options['minimizeResultsString']],{
+                                                                                                                                                         'onclick':function(){
+                                                                                                                                                          z['minimizeResults']();
+                                                                                                                                                         }
+                                                                                                                                                        }),
+                                                                                                                                              createDiv('gmls-maximize-results gmls-control-button',[z.options['maximizeResultsString']],{
+                                                                                                                                                         'onclick':function(){
+                                                                                                                                                          z['maximizeResults']();
+                                                                                                                                                         }
+                                                                                                                                                        }),
+                                                                                                                                              createDiv('gmls-clear-results gmls-control-button',[z.options['clearResultsString']],{
                                                                                                                                                         'onclick':function(){
-                                                                                                                                                          jGoogleBar['prototype']['clearResults'].apply(z,[]);
+                                                                                                                                                          z.form['clearResults']();
                                                                                                                                                          }
                                                                                                                                                         })])
                                                                                                                      ])
@@ -81,12 +101,15 @@
                                              z.formDiv=createDiv('gmls-search-form gmls-search-form-idle')
                                              ])
                                            ]),
-   form=z.form=new s.SearchForm(0,z.formDiv),
-   input=z['input']=form['input'];
-  input.onfocus=function(){
-   z.formDiv.className=z.formDiv.className.replace(/\bgmls-search-form-idle\b/,'gmls-search-form-active');
-  };
-  form.setOnSubmitCallback(z,jGoogleBar.prototype.execute);
+   form=z.form=new SearchForm(0,z.formDiv),
+   input=z['input']=form['input'],
+   onfocuslistener=function(){
+    z.formDiv.className=z.formDiv.className.replace(/\bgmls-search-form-idle\b/,'gmls-search-form-active');
+   };
+  form['setOnFocusListener'](z,onfocuslistener);
+  form['setOnBlurListener'](z,onfocuslistener);
+  form['setOnSubmitCallback'](z,jGoogleBar.prototype['execute']);
+  form['setOnClearCallback'](z,jGoogleBar.prototype['clearResults']);
  };
  jGoogleBar.prototype['execute']=function(query){ // execute a search
   var z=this,
@@ -109,15 +132,25 @@
    infowindow=z.infowindow;
   infowindow['close']();
   innerContainer.className=innerContainer.className.replace(/\bgmls-active\b/,'gmls-idle');
- if(!results){
-  return
- }
- rmChildren(table);
- rmChildren(pageDiv);
+  if(!results){
+   return
+  }
+  rmChildren(table);
+  rmChildren(pageDiv);
   for(var i=0;i<results.length;i++){
    var result=results[i];
    result['marker']['setMap'](null);
   }
+ };
+ jGoogleBar.prototype['minimizeResults']=function(){
+  var z=this,
+   resultsDiv=z['resultsDiv'];
+  resultsDiv.className=resultsDiv.className.replace(/\b(gmls-results-popup-)maximized\b/g,'$1minimized');
+ };
+ jGoogleBar.prototype['maximizeResults']=function(){
+  var z=this,
+   resultsDiv=z['resultsDiv'];
+  resultsDiv.className=resultsDiv.className.replace(/\b(gmls-results-popup-)minimized\b/g,'$1maximized');
  };
  jGoogleBar.prototype['searchCompleteCallback']=function(){
   var z=this,
@@ -172,7 +205,7 @@
    }
   }
   innerContainer.className=innerContainer.className.replace(/\bgmls-idle\b/,'gmls-active');
-  for(var i=0;i<cursor['pages'].length;i++){
+  for(var i=0;cursor['pages'] && i<cursor['pages'].length;i++){
    var page=cursor['pages'][i];
    pageCell.appendChild(createDiv('gsc-cursor-page'+(i==cursor['currentPageIndex']?' gsc-cursor-current-page':''),[page.label],{
                                   'onclick' : pageClosure(i)
@@ -187,7 +220,7 @@
    searcher=z.ls,
    results=searcher['results'],
    map=z.gmap,
-   infowindow=z['infowindow'],
+   infowindow=z.infowindow,
    marker=result['marker'];
   for(var i=0;i<searcher['results'].length;i++){
    var res=results[i],
@@ -201,7 +234,7 @@
    }
   }
   infowindow['close']();
-  infowindow['setContent'](result.html);
+  infowindow['setContent'](result['html']);
   infowindow['open'](map,marker);
  };
  jGoogleBar.prototype['gotoPage']=function(page){
@@ -235,7 +268,7 @@
    options['gll']=function(){
     return a['getBounds']()['toUrlValue'](7).replace(/\./g,'');
    };
-   options.sspn=function(){
+   options['sspn']=function(){
     return a['getBounds']()['toSpan']()['toUrlValue'](6);
    };
   }else if(typeis(a,'string')){
@@ -295,14 +328,16 @@
  };
  LocalSearch.prototype['createResultHtml']=function(result){
   result['html']=createDiv('gs-result gs-localResult',[
-                                                   createDiv('gs-title',[createEl('a','gs-title',[result.title])]),
-                                                   createDiv('gs-snippet',[result.snippet]),
+                                                   createDiv('gs-title',[createEl('a','gs-title',[result['title']],{
+                                                                                   href:result['url']
+                                                                                  })]),
+                                                   createDiv('gs-snippet',[result['snippet']]),
                                                    createDiv('gs-address',[
-                                                                           createDiv('gs-street gs-addressLine',[result.streetAddress]),
-                                                                           createDiv('gs-city gs-addressLine',[result.city+', '+result.region]),
-                                                                           createDiv('gs-country',[result.country])
+                                                                           createDiv('gs-street gs-addressLine',[result['streetAddress']]),
+                                                                           createDiv('gs-city gs-addressLine',[result['city']+', '+result['region']]),
+                                                                           createDiv('gs-country',[result['country']])
                                                                            ]),
-                                                   createDiv('gs-phone',[(result.phoneNumbers && result.phoneNumbers[0]) ? result.phoneNumbers[0].number : null]),
+                                                   createDiv('gs-phone',[(result['phoneNumbers'] && result['phoneNumbers'][0]) ? result['phoneNumbers'][0]['number'] : null]),
                                                    createDiv('gs-directions')
                                                    ])
  };
@@ -311,6 +346,111 @@
   LocalSearch['searchers'][context]['RAWcallback'](response)
  };
  LocalSearch.baseUrl='http://ajax.googleapis.com/ajax/services/search/local?';
+ 
+ 
+ // SearchForm so we don't have to include google.search every time.
+ function SearchForm(enableClear, parentEl, options){
+  options = this.options = mergeObjs(options,{
+                       'buttonText' : 'Search',
+                       'hintString' : 'Search the map!'
+                      });
+  var z=this,
+   input,
+   form=z.form=createEl('form','gsc-search-box',[
+                 createEl('table','gsc-search-box',[
+                           createEl('tr',null,[
+                                     createEl('td','gsc-input',[input=z['input']=createEl('input','gsc-input',null,{
+                                                                          'type' : 'text',
+                                                                          'autocomplete' : 'off',
+                                                                          'size' : 10,
+                                                                          'name' : 'search',
+                                                                          'title' : 'search',
+                                                                          'value' : options['hintString'],
+                                                                          'onfocus' : createClosure(z,SearchForm.prototype.toggleHint),
+                                                                          'onblur' : createClosure(z,SearchForm.prototype.toggleHint)
+                                                                         })]),
+                                     createEl('td','gsc-search-button',[z.button=createEl('input','gsc-search-button',null,{
+                                                                                  'type' : 'submit',
+                                                                                  'value' : options['buttonText'],
+                                                                                  'title' : 'search'
+                                                                                 })]),
+                                     z.clearButton=(enableClear ? createEl('td','gsc-clear-button',[createEl('div','gsc-clear-button',[' '],{
+                                                                                                'title' : 'clear results',
+                                                                                                'onclick' : function(){
+                                                                                                              z.form['clearResults']()
+                                                                                                             }
+                                                                                               })]) : null)
+                                    ])
+                          ],{
+                          'cellspacing':0,
+                          'cellpadding':0
+                          }),
+                 createEl('table','gsc-branding',[
+                           createEl('tr',null,[
+                                     createEl('td','gsc-branding-user-defined'),
+                                     createEl('td','gsc-branding-text',[createEl('div','gsc-branding-text',['powered by'])]),
+                                     createEl('gsc-branding-img-noclear',[createEl('img','gsc-branding-img-noclear',null,{
+                                                                                    'src' : 'http://www.google.com/uds/css/small-logo.png'
+                                                                                   })])
+                                    ])
+                          ])
+                                          ],{
+                 'accept-charset' : 'utf-8'
+                 });
+  if(parentEl){
+   parentEl.appendChild(form)
+  }
+ }
+ SearchForm.prototype['setOnSubmitCallback']=function(context, method, args){
+  var form=this.form;
+  if(!args){
+   args=[]
+  }
+  args.splice(0,0,this);
+  form.onsubmit=createClosure(context,method,args)
+ };
+ SearchForm.prototype['setOnClearCallback']=function(context,method,args){
+  if(!args){
+   args=[]
+  }
+  args.splice(0,0,this);
+  this.onclear=createClosure(context,method,args)
+ };
+ SearchForm.prototype['execute']=function(query){
+  var z=this,
+   input=z['input'],
+   form=z.form;
+  input['value']=query;
+  form['submit']();
+ };
+ SearchForm.prototype['setOnFocusListener']=function(context,method,args){
+  this.onfocuslistener=createClosure(context,method,args)
+ };
+ SearchForm.prototype['setOnBlurListener']=function(context,method,args){
+  this.onblurlistener=createClosure(context,method,args)
+ }
+ SearchForm.prototype.toggleHint=function(e){
+  var z=this,
+   input=z['input'],
+   hintString = z.options['hintString'];
+  if(!e){
+   e=window.event
+  }
+  if(e['type']=='focus'){
+   if(input['value']==hintString) input['value']='';
+   if(z['onfocuslistener']) return z['onfocuslistener']()
+  }else if(e['type']=='blur'){
+   if(input['value']=='') input['value']=hintString;
+   if(z['onblurlistener']) return z['onblurlistener']()
+  }
+ }
+ SearchForm.prototype['clearResults']=function(){
+  var z=this;
+  z.form['reset']();
+  if(z.onclear){
+   return z.onclear();
+  }
+ }
  
  
  
@@ -377,7 +517,7 @@
  
  function createClosure(context,method,args){
   return function(){
-   method.apply(context,args?args:[])
+   return method.apply(context,args?args:arguments)
   }
  }
  
@@ -389,7 +529,7 @@
  
  function mergeObjs(){ // merge two or more objects, giving precedence to first one
   var c={},
-   d=arguments;
+   d=arguments||[];
   for(var i=0;i<d.length;i++){
    var e=d[i];
    for(var j in e){
@@ -415,4 +555,6 @@
   window['jeremy']['jGoogleBar']['prototype']=jGoogleBar.prototype;
  window['jeremy']['gLocalSearch']=LocalSearch;
   window['jeremy']['gLocalSearch']['prototype']=LocalSearch.prototype;
+ window['jeremy']['SearchForm']=SearchForm;
+  window['jeremy']['SearchForm']['prototype']=SearchForm.prototype;
 })()
