@@ -24,7 +24,8 @@
    'icons' : [],
    'shadow' : new m['MarkerImage']('http://www.google.com/mapfiles/gadget/shadow50Small80.png',null,null,new m.Point(8,28)),
    'showResultsList' : true,
-   'showResultsMarkers' : true
+   'showResultsMarkers' : true,
+   'searchFormOptions' : {}
   };
  
  for(var i=0;i<8;i++){ // initialize our default markers
@@ -65,6 +66,7 @@
  }
  jGoogleBar.prototype['build']=function(){ // build the html elements of the control
   var z=this,
+   options=z.options,
    container=z['container']=createDiv('gmls',[
                                    z['innerContainer']=createDiv('gmls-app gmls-idle gmls-app-full-mode gmls-std-mode',[
                                              z['resultsDiv']=createDiv('gmls-results-popup gmls-results-popup-maximized',[
@@ -101,7 +103,7 @@
                                              z.formDiv=createDiv('gmls-search-form gmls-search-form-idle')
                                              ])
                                            ]),
-   form=z.form=new SearchForm(0,z.formDiv),
+   form=z.form=new SearchForm(0,z.formDiv,options.searchFormOptions),
    input=z['input']=form['input'],
    onfocuslistener=function(){
     z.formDiv.className=z.formDiv.className.replace(/\bgmls-search-form-idle\b/,'gmls-search-form-active');
@@ -357,7 +359,7 @@
   var z=this,
    input,
    form=z.form=createEl('form','gsc-search-box',[
-                 createEl('table','gsc-search-box',[
+                 createEl('table','gsc-search-box',[createEl('tbody',null,[
                            createEl('tr',null,[
                                      createEl('td','gsc-input',[input=z['input']=createEl('input','gsc-input',null,{
                                                                           'type' : 'text',
@@ -381,11 +383,11 @@
                                                                                                              }
                                                                                                })]) : null)
                                     ])
-                          ],{
+                          ])],{
                           'cellspacing':0,
                           'cellpadding':0
                           }),
-                 createEl('table','gsc-branding',[
+                 createEl('table','gsc-branding',[createEl('tbody',null,[
                            createEl('tr',null,[
                                      createEl('td','gsc-branding-user-defined'),
                                      createEl('td','gsc-branding-text',[createEl('div','gsc-branding-text',['powered by'])]),
@@ -393,7 +395,7 @@
                                                                                     'src' : 'http://www.google.com/uds/css/small-logo.png'
                                                                                    })])
                                     ])
-                          ])
+                          ])])
                                           ],{
                  'accept-charset' : 'utf-8'
                  });
