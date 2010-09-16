@@ -72,10 +72,12 @@
                                              z['resultsDiv']=createDiv('gmls-results-popup gmls-results-popup-maximized',[
                                                                     createDiv('gmls-results-list',[
                                                                               createDiv('gmls-results-table',[
-                                                                                        z['resultsTable']=createEl('table','gmls-results-table')
+                                                                                        createEl('table','gmls-results-table',[
+                                                                                                 z['resultsTable']=createEl('tbody')])
                                                                                                     ]),
                                                                               createDiv('gmls-results-controls',[
                                                                                         createEl('table','gmls-results-controls',[
+                                                                                             createEl('tbody',null,[
                                                                                                  createEl('tr',null,[
                                                                                                           createEl('td','gmls-more-results gsc-results',[createDiv('gsc-cursor-box',[z['pageDiv']=createDiv('gsc-cursor')])]),
                                                                                                           createEl('td','gmls-prev-next'),
@@ -95,6 +97,7 @@
                                                                                                                                                          }
                                                                                                                                                         })])
                                                                                                                      ])
+                                                                                                               ])
                                                                                                  ])
                                                                                         ]),
                                                                               z['attributionDiv']=createDiv('gmls-attribution')
@@ -165,7 +168,6 @@
    infowindow=z.infowindow,
    map=z.gmap,
    options=z.options,
-   indexes=['A','B','C','D','E','F','G','H'],
    viewport=searcher['resultViewport'],
    bounds=new m.LatLngBounds(new m.LatLng(parseFloat(viewport['sw']['lat']),parseFloat(viewport['sw']['lng'])),
                              new m.LatLng(parseFloat(viewport['ne']['lat']),parseFloat(viewport['ne']['lng']))),
@@ -185,7 +187,7 @@
  }
  for(var i=0;i<results.length;i++){
    var result=results[i],
-    index=indexes[i],
+    index=String.fromCharCode(65+i),
     html=result['listHtml']=createEl('tr',null,[createEl('td',null,[createDiv('gmls-result-list-item',[
                                                                      createDiv('gmls-result-list-item-key gmls-result-list-item-key-'+index+' gmls-result-list-item-key-local-'+index+' gmls-result-list-item-key-keymode',['&nbsp;']),
                                                                      createDiv('gs-title',[result['title']]),
@@ -206,13 +208,13 @@
     resultsTable.appendChild(html);
    }
   }
-  innerContainer.className=innerContainer.className.replace(/\bgmls-idle\b/,'gmls-active');
   for(var i=0;cursor['pages'] && i<cursor['pages'].length;i++){
    var page=cursor['pages'][i];
    pageCell.appendChild(createDiv('gsc-cursor-page'+(i==cursor['currentPageIndex']?' gsc-cursor-current-page':''),[page.label],{
                                   'onclick' : pageClosure(i)
                                   }));
   }
+  innerContainer.className=innerContainer.className.replace(/\bgmls-idle\b/,'gmls-active');
  };
  jGoogleBar.prototype['setResultSetSize']=function(size){
   this.ls['setResultSetSize'](size);
@@ -283,9 +285,12 @@
  LocalSearch.prototype['execute']=function(q,start){
   var z=this,
    options=z.options,
+   argsStr=z.argsStr;
+  if(!typeis(start,'number') || !argsStr){
    argsStr=[];
-  for(var i in options){
-   argsStr.push([i,encodeURIComponent(typeis(options[i],'function')?options[i]():options[i])].join('='));
+   for(var i in options){
+    argsStr.push([i,encodeURIComponent(typeis(options[i],'function')?options[i]():options[i])].join('='));
+   }
   }
   if(start){
    argsStr.push(['start',encodeURIComponent(start)].join('='));
@@ -296,6 +301,7 @@
    var script=createScript(LocalSearch.baseUrl+argsStr.join('&'));
    document.getElementsByTagName('head')[0].appendChild(script);
   }
+  z.argsStr=argsStr.slice(0,argsStr.length-(start?2:1));
  };
  LocalSearch.prototype['setSearchCompleteCallback']=function(context,method,args){
   this.searchCompleteCallback=createClosure(context,method,args)
