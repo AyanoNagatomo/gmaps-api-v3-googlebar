@@ -54,4 +54,17 @@ To demonstrate, consider this simple example:
 }}}
 
 =Advanced Stuff=
-I really should put something in here.
+Of course, one of the coolest things about the original GoogleBar (aka, Google Local Search Control) was that, if you looked through the code, you discovered that it was actually extremely flexible and adaptable. I have implemented a subset of what I believe were the most popular options in the jGoogleBar and a couple of my own.
+
+To utilize these options, you have only to provide the optional second argument (gbarOptions in the example above) with the appropriate properties. If you don't supply a property, a default value will be used. Options include:
+
+|| Property || type || Description ||
+|| resultSetSize || number|string || If you want to display a different number of results per "page," you can specify this property. If you supply a number, acceptable values are 1-8. If you supply a string, acceptable values are 'small' or 'large'. If you have the Search API loaded, you can alternatively supply google.search.Search.SMALL_RESULTSET or google.search.Search.LARGE_RESULTSET. Default: 8 ||
+|| clearResultsString || string || If you want to replace the X used by default for the UI element that clears search results, simply supply your own string. For example, you could use, "I'm done with these!" or "Clear Results", etc. Default: X ||
+|| minimizeResultsString || string || Same as clearResultsString Default: _||
+|| maximizeResultsString || string || Same as minimizeResultsString Default: ^ ||
+|| icons || array[google.maps.Icon x 8] || If you want to use a set of custom markers, simply provide an array of 8 Icon objects ||
+|| shadow || Icon || If you are defining a set of custom markers, it is assumed that they'll all be derived from the same shape. So you can use this to provide a single custom shadow for your custom markers ||
+|| showResultsList || boolean || Set to false if you would like to prevent the actual list of results from showing Default: true ||
+|| showResultsMarkers || boolean || Set to false if you would like to NOT place markers on the map for each result. Default: true ||
+|| searchFormOptions || object || An object literal which can be used to set options for the search form itself. Possible properties here include hintString (the string to place in the input to give an idea what users are supposed to do), buttonText (the string to use in the button instead of "Search") ||
