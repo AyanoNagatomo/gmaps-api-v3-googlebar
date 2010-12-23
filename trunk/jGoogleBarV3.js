@@ -111,6 +111,11 @@
    onfocuslistener=function(){
     z.formDiv.className=z.formDiv.className.replace(/\bgmls-search-form-idle\b/,'gmls-search-form-active');
    };
+  if(options['resultList']){
+   rmChildren(options['resultList']);
+   options['resultList'].appendChild(z.formDiv);
+   options['resultList'].appendChild(z['resultsDiv']);
+  }
   form['setOnFocusListener'](z,onfocuslistener);
   form['setOnBlurListener'](z,onfocuslistener);
   form['setOnSubmitCallback'](z,jGoogleBar.prototype['execute']);
