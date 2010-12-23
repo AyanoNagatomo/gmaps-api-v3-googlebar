@@ -9,7 +9,12 @@
    }
    #map_canvas{
     height:100%;
-    width:100%;
+    width:75%;
+   }
+   #resultsCanvas{
+    height:100%;
+    width:25%;
+    float:left;
    }
   </style>
   <script type="text/javascript" src="http://www.google.com/jsapi"></script>
@@ -22,7 +27,7 @@
      zoom : 9
     },
     gbarOptions={
-     // we're going with the defaults
+     resultList : document.getElementById('resultsCanvas')
     };
     var map=new google.maps.Map(document.getElementById('map_canvas'),mapOptions);
     map.controls[google.maps.ControlPosition.BOTTOM_LEFT].push((window.gbar=new window.jeremy.jGoogleBar(map,gbarOptions)).container);
@@ -32,6 +37,7 @@
   <script type="text/javascript" src="jGoogleBarV3.min.js"></script>
  </head>
  <body>
+  <div id="resultsCanvas"></div>
   <div id="map_canvas"></div>
  </body>
 </html>
