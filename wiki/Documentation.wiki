@@ -1,5 +1,5 @@
 #summary Some tips and tricks for using the jGoogleBarv3.js
-#labels Phase-Implementation
+#labels Phase-Implementation,Featured
 
 =Introduction=
 
