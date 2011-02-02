@@ -358,7 +358,7 @@
                                                    createDiv('gs-directions')
                                                    ])
  };
- LocalSearch.prototype.setQueryAddition=function(addition){
+ LocalSearch.prototype['setQueryAddition']=function(addition){
   this.queryAddition=addition;
  };
  LocalSearch['searchers']=[];
