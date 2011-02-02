@@ -252,6 +252,9 @@
   z['clearResults']();
   searcher['gotoPage'](page);
  };
+ jGoogleBar.prototype['setQueryAddition']=function(addition){
+  this.ls['setQueryAddition'](addition);
+ }
 
  
  // Custom Local Search wrapper that supports GMaps v3
