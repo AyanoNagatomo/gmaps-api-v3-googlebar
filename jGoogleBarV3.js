@@ -290,7 +290,8 @@
  LocalSearch.prototype['execute']=function(q,start){
   var z=this,
    options=z.options,
-   argsStr=z.argsStr;
+   argsStr=z.argsStr,
+   qAdd=z.queryAddition;
   if(!typeis(start,'number') || !argsStr){
    argsStr=[];
    for(var i in options){
@@ -300,7 +301,7 @@
   if(start){
    argsStr.push(['start',encodeURIComponent(start)].join('='));
   }
-  argsStr.push(['q',encodeURIComponent(q?q:z.currentQuery)].join('='));
+  argsStr.push(['q',encodeURIComponent((q?q:z.currentQuery)+(qAdd?' '+qAdd:''))].join('='));
   if(q || (start && z.currentQuery)){
    z.currentQuery=q||z.currentQuery;
    var script=createScript(LocalSearch.baseUrl+argsStr.join('&'));
@@ -353,6 +354,9 @@
                                                    createDiv('gs-phone',[(result['phoneNumbers'] && result['phoneNumbers'][0]) ? result['phoneNumbers'][0]['number'] : null]),
                                                    createDiv('gs-directions')
                                                    ])
+ };
+ LocalSearch.prototype.setQueryAddition=function(addition){
+  this.queryAddition=addition;
  };
  LocalSearch['searchers']=[];
  LocalSearch['callback']=function(context,response){
