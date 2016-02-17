@@ -1,0 +1,7 @@
+The idea is to create a GoogleBar-like control for GMaps API v3. Since the original GoogleBar is based on the Search API team's Google Maps Local Search Control, we will approximate that functionality, making tweaks where necessary and appropriate.
+
+# IMPORTANT ANNOUNCEMENT #
+
+The Local Search API has been deprecated as of November 2010. The deprecation policy states that Google will continue to provide limited support for a period of up to three years from that date. Therefore, this application will cease to function NO LATER THAN November 2013, and possibly much earlier.
+
+The heir apparent of the Local Search API is the Places API, but its "search" functionality is fundamentally different, allowing you to search only for broad categories of locations (e.g., "restaurant") rather than specific longtail searches. For this reason, I have reluctantly concluded that there is no real way to migrate the gmaps-api-v3-googlebar to the Places API in its current form and maintain comparable functionality. Therefore, while I will continue to maintain this project for as long as the Local Search API continues to function, I will not be working to develop additional features. And when the API ceases to function, this project will be scheduled for deletion.

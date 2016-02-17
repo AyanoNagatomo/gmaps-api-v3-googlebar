@@ -1,0 +1,68 @@
+# Introduction #
+
+So, when the GMaps API team announced the deprecation of the v2 JS API, it sparked a mass exodus toward v3. One relatively popular feature, the GoogleBar (aka Local Search Control), is fundamentally incompatible with v3 of the GMaps API. Since local search and GMaps are a natural mashup, the jGoogleBar was created. This control borrows its essential functionality, HTML structure, and CSS from the original Local Search Control but adds a couple of tweaks and tricks to the mix.
+
+
+# Getting Started #
+
+Basic usage of the jGoogleBar is relatively straight forward. The basic steps are:
+
+  1. Create a page which loads a Google Map
+  1. Create the control
+  1. Push the control's .container into the appropriate control position.
+
+To demonstrate, consider this simple example:
+
+```
+<html>
+ <head>
+  <title>jGoogleBarV3</title>
+  <style type="text/css">
+   #map_canvas{
+    height:100%;
+    width:100%;
+   }
+  </style>
+  <script type="text/javascript" src="http://www.google.com/jsapi"></script>
+  <script type="text/javascript">
+   google.load('maps','3',{other_params:'sensor=false'}); // load the maps api
+   google.load('search','1'); // load the search api (need this for the search form)
+   function init(){
+    var mapOptions={ // set up some map options
+     center : new google.maps.LatLng(44, -93),
+     mapTypeId : google.maps.MapTypeId.ROADMAP,
+     zoom : 9
+    },
+    gbarOptions={
+     // we're going with the defaults
+    };
+    var map=new google.maps.Map(document.getElementById('map_canvas'),mapOptions);
+    var gbar=new window.jeremy.jGoogleBar(map,gbarOptions)
+    map.controls[google.maps.ControlPosition.BOTTOM_LEFT].push(gbar.container);
+   }
+   google.setOnLoadCallback(init);
+  </script>
+  <script type="text/javascript" src="jGoogleBarV3.js"></script>
+ </head>
+ <body>
+  <div id="map_canvas"></div>
+ </body>
+</html>
+```
+
+# Advanced Stuff #
+Of course, one of the coolest things about the original GoogleBar (aka, Google Local Search Control) was that, if you looked through the code, you discovered that it was actually extremely flexible and adaptable. I have implemented a subset of what I believe were the most popular options in the jGoogleBar and a couple of my own.
+
+To utilize these options, you have only to provide the optional second argument (gbarOptions in the example above) with the appropriate properties. If you don't supply a property, a default value will be used. Options include:
+
+| Property | type | Description |
+|:---------|:-----|:------------|
+| resultSetSize | number|string | If you want to display a different number of results per "page," you can specify this property. If you supply a number, acceptable values are 1-8. If you supply a string, acceptable values are 'small' or 'large'. If you have the Search API loaded, you can alternatively supply google.search.Search.SMALL\_RESULTSET or google.search.Search.LARGE\_RESULTSET. Default: 8 |
+| clearResultsString | string | If you want to replace the X used by default for the UI element that clears search results, simply supply your own string. For example, you could use, "I'm done with these!" or "Clear Results", etc. Default: X |
+| minimizeResultsString | string | Same as clearResultsString Default: |
+| maximizeResultsString | string | Same as minimizeResultsString Default: ^ |
+| icons    | array[google.maps.Icon x 8] | If you want to use a set of custom markers, simply provide an array of 8 Icon objects |
+| shadow   | Icon | If you are defining a set of custom markers, it is assumed that they'll all be derived from the same shape. So you can use this to provide a single custom shadow for your custom markers |
+| showResultsList | boolean | Set to false if you would like to prevent the actual list of results from showing Default: true |
+| showResultsMarkers | boolean | Set to false if you would like to NOT place markers on the map for each result. Default: true |
+| searchFormOptions | object | An object literal which can be used to set options for the search form itself. Possible properties here include hintString (the string to place in the input to give an idea what users are supposed to do), buttonText (the string to use in the button instead of "Search") |
